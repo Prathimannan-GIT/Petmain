@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Menu Test</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .header {
+            background: #f0f0f0;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: block;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: 1px solid #333;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .mobile-menu {
+            display: none;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 1rem;
+        }
+        
+        .mobile-menu.open {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🐾 Paws & Polish</div>
+            <div class="nav-links">
+                <a href="#">Home</a> | 
+                <a href="#">Services</a> | 
+                <a href="#">Contact</a>
+            </div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </nav>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#">Home</a><br>
+            <a href="#">Services</a><br>
+            <a href="#">Contact</a>
+        </div>
+    </header>
+    
+    <main>
+        <h1>Mobile Menu Test</h1>
+        <p>Resize browser to mobile width to test hamburger menu.</p>
+    </main>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        console.log('Menu toggle:', menuToggle);
+        console.log('Mobile menu:', mobileMenu);
+        
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', function() {
+                console.log('Menu clicked!');
+                mobileMenu.classList.toggle('open');
+                console.log('Menu open:', mobileMenu.classList.contains('open'));
+            });
+        }
+    </script>
+</body>
+</html>
