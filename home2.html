@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paws & Polish Grooming Salon - Home 2</title>
+  <title>Paws Grooming Salon - Home 2</title>
   <link rel="icon"
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css" />
@@ -14,7 +14,10 @@
   <div class="cursor-trail" aria-hidden="true"></div>
   <header class="site-header">
     <nav class="navbar">
-      <div class="logo"><span class="logo-icon">🐾</span> Paws & Polish</div>
+      <!-- Logo stays on the left -->
+      <div class="logo"><span class="logo-icon">🐾</span> Paws</div>
+
+      <!-- Desktop nav links (centered on desktop) -->
       <div class="nav-links">
         <a href="index.html">Home 1</a>
         <a href="home2.html">Home 2</a>
@@ -22,30 +25,51 @@
         <a href="#gallery">Gallery</a>
         <a href="#reviews">Reviews</a>
         <a href="#contact">Contact</a>
-        <a class="button primary" href="#booking">Book Appointment</a>
       </div>
-      <button class="button ghost icon-btn theme-toggle" aria-label="Toggle Theme" aria-pressed="false">
+
+      <!-- Header actions (right corner) -->
+      <div class="nav-actions">
+        <a class="button primary" href="#booking">Join</a>
+        <a class="button ghost" id="logoutBtn" style="display: none;">Logout</a>
+
+        <!-- Desktop theme toggle -->
+        <button class="button ghost icon-btn theme-toggle nav-theme-toggle" aria-label="Toggle Theme"
+          aria-pressed="false">
+          <span class="theme-icon sun">☀️</span>
+          <span class="theme-icon moon">🌙</span>
+        </button>
+
+        <!-- Hamburger button – visible only on mobile & tablet -->
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="Open navigation menu" aria-expanded="false"
+          aria-controls="nav-overlay">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Full-screen nav overlay – rendered outside header so it covers entire viewport -->
+  <div id="nav-overlay" class="nav-overlay" aria-hidden="true" role="dialog" aria-label="Navigation Menu">
+    <!-- Close button at top-right of overlay -->
+    <button id="overlay-close-btn" class="overlay-close-btn" aria-label="Close navigation menu">✕</button>
+    <nav class="nav-overlay-links">
+      <a href="index.html" class="overlay-link">Home 1</a>
+      <a href="home2.html" class="overlay-link">Home 2</a>
+      <a href="#services" class="overlay-link">Services</a>
+      <a href="#gallery" class="overlay-link">Gallery</a>
+      <a href="#reviews" class="overlay-link">Reviews</a>
+      <a href="#contact" class="overlay-link">Contact</a>
+      <a href="#booking" class="overlay-link overlay-book">Join</a>
+      <!-- Theme toggle inside the overlay (mobile/tablet only) -->
+      <div class="overlay-divider"></div>
+      <button class="button ghost icon-btn theme-toggle overlay-theme-btn" aria-label="Toggle Theme"
+        aria-pressed="false">
         <span class="theme-icon sun">☀️</span>
         <span class="theme-icon moon">🌙</span>
       </button>
-      <button id="mobileMenuToggle" class="button ghost icon-btn menu-toggle" aria-label="Open Menu"
-        aria-expanded="false" aria-controls="mobileMenu">
-        ☰
-      </button>
     </nav>
-  </header>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html">Home 1</a>
-    <a href="home2.html">Home 2</a>
-    <a href="#services">Services</a>
-    <a href="#gallery">Gallery</a>
-    <a href="#reviews">Reviews</a>
-    <a href="#contact">Contact</a>
-    <a class="button primary" href="#booking">Book Appointment</a>
-    <button class="button ghost icon-btn theme-toggle" aria-label="Toggle Theme" aria-pressed="false">
-      <span class="theme-icon sun">☀️</span>
-      <span class="theme-icon moon">🌙</span>
-    </button>
   </div>
 
   <main>
@@ -57,7 +81,7 @@
           Boutique care with soothing touch and spa-grade products.
         </p>
         <div class="hero-actions">
-          <a class="button primary" href="#booking">Book Appointment</a>
+          <a class="button primary" href="#booking">Join</a>
           <a class="button secondary" href="#services">View Services</a>
         </div>
         <div class="floating-icons" aria-hidden="true">
@@ -228,14 +252,14 @@
   <footer class="footer">
     <div class="footer-grid">
       <div>
-        <h3><span class="logo-icon">🐾</span> Paws &amp; Polish</h3>
+        <h3><span class="logo-icon">🐾</span> Paws</h3>
         <p>Gentle grooming for every pet personality.</p>
       </div>
       <div>
         <h4>Quick Links</h4>
         <a href="index.html">Home</a>
         <a href="#services">Services</a>
-        <a href="#booking">Book</a>
+        <a href="#booking">Join</a>
         <a href="login.html">Login</a>
       </div>
       <div>
@@ -254,7 +278,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Paws &amp; Polish. All rights reserved.</span>
+      <span>© 2026 Paws. All rights reserved.</span>
       <div class="social-icons">
         <a href="https://facebook.com" target="_blank" aria-label="Facebook">
           <svg viewBox="0 0 24 24" aria-hidden="true">

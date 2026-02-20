@@ -1,6 +1,4 @@
 const themeToggles = document.querySelectorAll(".theme-toggle");
-const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-const mobileMenu = document.getElementById("mobileMenu");
 const bookingForm = document.getElementById("bookingForm");
 const bookingConfirm = document.getElementById("bookingConfirm");
 const slider = document.querySelector(".slider");
@@ -23,74 +21,166 @@ if (themeToggles.length) {
   });
 }
 
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing mobile menu...');
-  
-  // Highlight active page in navigation
-  function highlightActivePage() {
-    const currentPath = window.location.pathname;
-    const currentFile = currentPath.split('/').pop() || 'index.html';
-    
-    // Get all navigation links
-    const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a');
-    
-    navLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      
-      // Remove existing active classes
-      link.classList.remove('active');
-      
-      // Add active class based on current page
-      if (href === currentFile || 
-          (currentFile === 'index.html' && href === 'index.html') ||
-          (currentFile === '' && href === 'index.html')) {
-        link.classList.add('active');
-      }
-      
-      // Handle hash links for single page navigation
-      if (href.startsWith('#') && currentFile === 'index.html') {
-        const hash = window.location.hash;
-        if (hash === href) {
-          link.classList.add('active');
-        }
-      }
-    });
-  }
-  
-  // Call the function to set active page
-  highlightActivePage();
-  
-  // Mobile Menu Toggle
-  const mobileMenuToggle = document.getElementById("mobileMenuToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
+// Check if user is logged in
+function isLoggedIn() {
+  return localStorage.getItem('isLoggedIn') === 'true';
+}
 
-  console.log('Mobile menu toggle found:', !!mobileMenuToggle);
-  console.log('Mobile menu found:', !!mobileMenu);
+// Handle booking button clicks
+function handleBookingClick(event) {
+  event.preventDefault();
 
-  if (mobileMenuToggle && mobileMenu) {
-    mobileMenuToggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      console.log('Mobile menu toggle clicked');
-      // Toggle both classes for maximum compatibility
-      mobileMenu.classList.toggle("active");
-      mobileMenu.classList.toggle("open");
-      const isActive = mobileMenu.classList.contains("active") || mobileMenu.classList.contains("open");
-      mobileMenuToggle.setAttribute("aria-expanded", isActive);
-      console.log('Mobile menu is now:', isActive ? 'open' : 'closed');
-    });
-
-    // Close menu when clicking links
-    mobileMenu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        mobileMenu.classList.remove("active");
-        mobileMenu.classList.remove("open");
-        mobileMenuToggle.setAttribute("aria-expanded", "false");
-      });
-    });
+  if (!isLoggedIn()) {
+    // Redirect to login page
+    window.location.href = 'login.html';
   } else {
-    console.error('Mobile menu elements not found!');
+    // Scroll to booking section
+    const bookingSection = document.getElementById('booking');
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }
+}
+
+// Add event listeners to booking buttons
+function initBookingButtons() {
+  const bookingButtons = document.querySelectorAll('a[href="#booking"]');
+  bookingButtons.forEach(button => {
+    button.addEventListener('click', handleBookingClick);
+  });
+}
+
+// Update login state UI
+function updateLoginState() {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    if (isLoggedIn()) {
+      logoutBtn.style.display = 'inline-flex';
+    } else {
+      logoutBtn.style.display = 'none';
+    }
+  }
+
+  // Add logout functionality
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+      updateLoginState();
+      alert('You have been logged out successfully');
+    });
+  }
+}
+
+// Initialize booking buttons when DOM is loaded
+document.addEventListener('DOMContentLoaded', function () {
+  initBookingButtons();
+
+  // Check login state and show/hide logout button
+  updateLoginState();
+
+  // ── FULL-SCREEN NAV OVERLAY  ──────────────────────────────────────────
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const navOverlay = document.getElementById('nav-overlay');
+
+  if (hamburgerBtn && navOverlay) {
+
+    function openOverlay() {
+      navOverlay.classList.add('is-open');
+      navOverlay.setAttribute('aria-hidden', 'false');
+      hamburgerBtn.classList.add('is-open');
+      hamburgerBtn.setAttribute('aria-expanded', 'true');
+      hamburgerBtn.setAttribute('aria-label', 'Close navigation menu');
+      document.body.style.overflow = 'hidden'; // prevent background scroll
+    }
+
+    function closeOverlay() {
+      navOverlay.classList.remove('is-open');
+      navOverlay.setAttribute('aria-hidden', 'true');
+      hamburgerBtn.classList.remove('is-open');
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      hamburgerBtn.setAttribute('aria-label', 'Open navigation menu');
+      document.body.style.overflow = '';
+    }
+
+    // Dedicated close button (✕) inside the overlay
+    const overlayCloseBtn = document.getElementById('overlay-close-btn');
+    if (overlayCloseBtn) {
+      overlayCloseBtn.addEventListener('click', closeOverlay);
+    }
+
+    hamburgerBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      navOverlay.classList.contains('is-open') ? closeOverlay() : openOverlay();
+    });
+
+    // Close when any overlay link is clicked
+    navOverlay.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', closeOverlay);
+    });
+
+    // Close when clicking the overlay background (not on the nav itself)
+    navOverlay.addEventListener('click', function (e) {
+      if (e.target === navOverlay) closeOverlay();
+    });
+
+    // Auto-close on resize to desktop widths
+    window.addEventListener('resize', function () {
+      if (window.innerWidth >= 1024) closeOverlay();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeOverlay();
+    });
+
+    // -- ACTIVE NAVIGATION HIGHLIGHTING -------------------------------------
+    function highlightActivePage() {
+      const currentPath = window.location.pathname;
+      const currentFile = currentPath.split('/').pop() || 'index.html';
+      const hash = window.location.hash;
+
+      const navLinks = document.querySelectorAll('.nav-links a, .overlay-link');
+
+      // Clear all active classes first
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      let foundHashMatch = false;
+
+      // Priority 1: Match hash if it exists
+      if (hash) {
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === hash) {
+            link.classList.add('active');
+            foundHashMatch = true;
+          }
+        });
+      }
+
+      // Priority 2: Fallback to matching the current page file if no hash match found
+      if (!foundHashMatch) {
+        navLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          const isHomePage = (currentFile === 'index.html' || currentFile === '');
+          const isLinkHome = (href === 'index.html');
+
+          if (href === currentFile || (isHomePage && isLinkHome)) {
+            link.classList.add('active');
+          }
+        });
+      }
+    }
+
+    // Call on load and on hash change
+    highlightActivePage();
+    window.addEventListener('hashchange', highlightActivePage);
+    // -----------------------------------------------------------------------
+
+  }
+  // ─────────────────────────────────────────────────────────────────────
+
 });
 
 if (slider && afterImage) {
@@ -210,24 +300,74 @@ if (trailContainer) {
   });
 }
 
+// Handle login form submission - only on login page
+if (window.location.pathname.includes('login.html')) {
+  const loginForm = document.querySelector('.auth-card button[type="button"]');
+  if (loginForm && loginForm.textContent === 'Login') {
+    loginForm.addEventListener('click', function () {
+      const emailInput = document.querySelector('input[type="email"]');
+      const passwordInput = document.querySelector('input[type="password"]');
+
+      if (emailInput && passwordInput) {
+        // Simple validation (in real app, this would be server-side)
+        if (emailInput.value && passwordInput.value) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', emailInput.value);
+          window.location.href = 'index.html#booking';
+        } else {
+          alert('Please fill in all fields');
+        }
+      }
+    });
+  }
+}
+
+// Handle register form submission - only on register page
+if (window.location.pathname.includes('register.html')) {
+  const registerForm = document.querySelector('.auth-card button[type="button"]');
+  if (registerForm && registerForm.textContent === 'Register') {
+    registerForm.addEventListener('click', function () {
+      const nameInput = document.querySelector('input[type="text"]');
+      const emailInput = document.querySelector('input[type="email"]');
+      const passwordInputs = document.querySelectorAll('input[type="password"]');
+
+      if (nameInput && emailInput && passwordInputs.length === 2) {
+        if (passwordInputs[0].value !== passwordInputs[1].value) {
+          alert('Passwords do not match');
+          return;
+        }
+
+        if (nameInput.value && emailInput.value && passwordInputs[0].value) {
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', emailInput.value);
+          localStorage.setItem('userName', nameInput.value);
+          window.location.href = 'index.html#booking';
+        } else {
+          alert('Please fill in all fields');
+        }
+      }
+    });
+  }
+}
+
 // Back to Top Button
-const backToTopButton = document.getElementById("backToTop");
+const backToTopButton = document.getElementById('backToTop');
 
 if (backToTopButton) {
   // Show/hide button based on scroll position
-  window.addEventListener("scroll", () => {
+  window.addEventListener('scroll', () => {
     if (window.pageYOffset > 300) {
-      backToTopButton.classList.add("visible");
+      backToTopButton.classList.add('visible');
     } else {
-      backToTopButton.classList.remove("visible");
+      backToTopButton.classList.remove('visible');
     }
   });
 
   // Scroll to top when clicked
-  backToTopButton.addEventListener("click", () => {
+  backToTopButton.addEventListener('click', () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: 'smooth'
     });
   });
 }

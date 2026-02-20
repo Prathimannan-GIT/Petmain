@@ -52,31 +52,31 @@ body[data-theme="dark"] .site-header {
 }
 
 .navbar {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 18px 24px;
-  display: flex;
+  padding: 12px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 16px;
+  position: relative;
+  min-height: 70px;
 }
 
 .logo {
+  grid-column: 1;
   font-size: 1.4rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.logo-icon {
-  font-size: 1.2em;
-  line-height: 1;
+  justify-self: start;
 }
 
 .nav-links {
+  grid-column: 2;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   font-weight: 600;
   align-items: center;
   flex-wrap: nowrap;
@@ -84,22 +84,41 @@ body[data-theme="dark"] .site-header {
   justify-content: center;
 }
 
-.nav-links a {
+.nav-actions {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: end;
+}
+
+.nav-links a,
+.overlay-link {
   position: relative;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text);
+  font-weight: 600;
 }
 
-.nav-links a:hover {
-  background: rgba(255, 182, 185, 0.1);
+body[data-theme="dark"] .nav-links a {
+  color: #f7f5ff;
+}
+
+.nav-links a:hover,
+.overlay-link:hover {
+  background: rgba(255, 182, 185, 0.15);
   color: var(--peach);
+  transform: translateY(-1px);
 }
 
-.nav-links a.active {
+.nav-links a.active,
+.overlay-link.active {
   background: var(--peach);
-  color: #111;
+  color: #111 !important;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 182, 185, 0.25);
 }
 
 .button {
@@ -166,51 +185,190 @@ body[data-theme="dark"] .theme-icon.sun {
   justify-content: center;
 }
 
-.menu-toggle {
-  display: none !important;
-}
-
-.mobile-menu {
+/* ═══════════════════════════════════════════════════════════
+   HAMBURGER BUTTON  (hidden on desktop, shown on ≤1024px)
+   ═══════════════════════════════════════════════════════════ */
+.hamburger-btn {
   display: none;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 20px 24px;
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.mobile-menu.active,
-.mobile-menu.open {
-  display: flex;
-}
-
-body[data-theme="dark"] .mobile-menu {
-  background: rgba(17, 15, 26, 0.95);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-.mobile-menu a {
-  display: block;
-  padding: 12px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   border-radius: 8px;
-  transition: all 0.3s ease;
-  font-weight: 600;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+  z-index: 10001;
+  position: relative;
 }
 
-.mobile-menu a:hover {
-  background: rgba(255, 182, 185, 0.1);
-  color: var(--peach);
+.hamburger-btn:hover {
+  background: rgba(255, 182, 185, 0.15);
 }
 
-.mobile-menu a.active {
-  background: var(--peach);
-  color: #111;
+.hamburger-bar {
+  display: block;
+  width: 26px;
+  height: 2.5px;
+  background: var(--text);
+  border-radius: 4px;
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.25s ease,
+    width 0.3s ease;
+  transform-origin: center;
+}
+
+body[data-theme="dark"] .hamburger-bar {
+  background: #f7f5ff;
+}
+
+/* X state when overlay is open */
+.hamburger-btn.is-open .hamburger-bar:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+
+.hamburger-btn.is-open .hamburger-bar:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+
+.hamburger-btn.is-open .hamburger-bar:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FULL-SCREEN NAV OVERLAY
+   Hidden on desktop (display:none), shown only on ≤1024px
+   ═══════════════════════════════════════════════════════════ */
+.nav-overlay {
+  display: none;
+  /* hidden on desktop */
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--cream);
+  z-index: 10000;
+  overflow-y: auto;
+  /* slide-in from right */
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.3s ease;
+}
+
+body[data-theme="dark"] .nav-overlay {
+  background: var(--dark);
+}
+
+.nav-overlay.is-open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Centre all links vertically + horizontally */
+.nav-overlay-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 80px 32px 40px;
+  gap: 6px;
+  text-align: center;
+}
+
+.overlay-link {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  padding: 14px 20px;
+  font-size: 1.25rem;
   font-weight: 700;
+  color: var(--text);
+  border-radius: 12px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.mobile-menu .button {
-  width: fit-content;
-  margin: 0 auto;
+body[data-theme="dark"] .overlay-link {
+  color: #f7f5ff;
+}
+
+.overlay-link:hover {
+  background: rgba(255, 182, 185, 0.18);
+  color: var(--peach);
+  transform: scale(1.03);
+}
+
+/* Book Appointment CTA button inside overlay */
+.overlay-book {
+  background: var(--peach);
+  color: #111 !important;
+  margin-top: 8px;
+  box-shadow: 0 8px 20px rgba(255, 182, 185, 0.35);
+}
+
+.overlay-book:hover {
+  background: #ffa0a4;
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Divider between nav links and auth links */
+.overlay-divider {
+  width: 60px;
+  height: 2px;
+  background: var(--peach);
+  border-radius: 2px;
+  margin: 12px 0;
+  opacity: 0.5;
+}
+
+/* Theme toggle inside overlay */
+.overlay-theme-btn {
+  margin-top: 16px;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+body[data-theme="dark"] .overlay-theme-btn {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Close (X) button inside the overlay */
+.overlay-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  z-index: 10002;
+}
+
+.overlay-close-btn:hover {
+  background: rgba(255, 182, 185, 0.2);
+  color: var(--peach);
+  transform: rotate(90deg) scale(1.1);
+}
+
+body[data-theme="dark"] .overlay-close-btn {
+  color: #f7f5ff;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .hero {
@@ -498,16 +656,17 @@ body[data-theme="dark"] .review-card {
 }
 
 .pricing-card ul {
-  margin-top: 14px;
+  margin-top: 20px;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   list-style: none;
-  text-align: left;
+  text-align: center;
 }
 
 .pricing-card li {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 0.95rem;
 }
@@ -736,11 +895,17 @@ body[data-theme="dark"] .staff-card img {
   transform: translateY(-2px) scale(1.1);
 }
 
+.footer-grid>div:nth-child(4) {
+  justify-self: center;
+}
+
 .newsletter {
   margin-top: 12px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
 }
 
 .newsletter input {
@@ -748,6 +913,20 @@ body[data-theme="dark"] .staff-card img {
   padding: 10px 14px;
   border-radius: 999px;
   border: none;
+}
+
+/* Hide scrollbar on signup page but keep scrolling functionality */
+body.register-page {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+body.register-page::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 .auth-page {
@@ -771,6 +950,262 @@ body[data-theme="dark"] .staff-card img {
 
 body[data-theme="dark"] .auth-card {
   background: #1c1a2b;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.auth-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.auth-subtitle {
+  color: var(--peach);
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.auth-form-container {
+  display: grid;
+  gap: 16px;
+}
+
+.form-fields {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.form-fields label {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  font-weight: 600;
+  width: 100%;
+}
+
+.form-fields input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 1rem;
+}
+
+body[data-theme="dark"] .form-fields input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f7f5ff;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: relative;
+  height: 18px;
+  width: 18px;
+  background-color: #fff;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+body[data-theme="dark"] .checkmark {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.checkbox-label:hover input~.checkmark {
+  border-color: var(--peach);
+}
+
+.checkbox-label input:checked~.checkmark {
+  background-color: var(--peach);
+  border-color: var(--peach);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label input:checked~.checkmark:after {
+  display: block;
+}
+
+.forgot-password {
+  color: var(--peach);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: var(--sky);
+  text-decoration: underline;
+}
+
+.terms-link {
+  color: var(--peach);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+  color: var(--sky);
+  text-decoration: underline;
+}
+
+.auth-form-container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.auth-form-container>p {
+  color: #666;
+  margin: 0;
+}
+
+body[data-theme="dark"] .auth-title {
+  color: #f7f5ff;
+}
+
+body[data-theme="dark"] .auth-form-container h2 {
+  color: #f7f5ff;
+}
+
+body[data-theme="dark"] .auth-form-container>p {
+  color: #aaa;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.auth-divider span {
+  padding: 0 16px;
+}
+
+.social-login {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.social-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.social-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.social-btn.facebook {
+  background: #1877f2;
+  color: white;
+}
+
+.social-btn.facebook:hover {
+  background: #166fe5;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(24, 119, 242, 0.3);
+}
+
+.social-btn.google {
+  background: white;
+  color: #4285f4;
+  border-color: rgba(66, 133, 244, 0.2);
+}
+
+.social-btn.google:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(66, 133, 244, 0.2);
+}
+
+.social-btn.instagram {
+  background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+  color: white;
+}
+
+.social-btn.instagram:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(225, 48, 108, 0.3);
 }
 
 .auth-card input {
@@ -948,25 +1383,41 @@ body[data-theme="dark"] .stat-card {
   }
 }
 
-@media (max-width: 768px) {
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE: MOBILE + TABLET  (< 1024px)
+   Show hamburger, hide desktop nav & theme toggle
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+
+  /* Show hamburger button */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  /* Hide desktop navigation */
   .nav-links {
     display: none;
   }
 
-  .menu-toggle {
-    display: inline-flex !important;
-  }
-
-  .mobile-menu.active,
-  .mobile-menu.open {
-    display: flex;
-  }
-
-  .navbar .theme-toggle {
+  /* Hide header CTA (Join button) on mobile/tablet */
+  .nav-actions .button.primary {
     display: none;
   }
 
-  /* Mobile before-after gallery fixes */
+  /* Hide desktop theme toggle (one inside .navbar only) */
+  .nav-theme-toggle {
+    display: none !important;
+  }
+
+  /* Make overlay visible (it is still off-screen via transform) */
+  .nav-overlay {
+    display: block;
+  }
+}
+
+/* ─── Mobile only: gallery slider fixes ─────────────────── */
+@media (max-width: 768px) {
+
   .before-after-inner {
     height: auto;
     min-height: 300px;
@@ -994,32 +1445,6 @@ body[data-theme="dark"] .stat-card {
     left: auto;
     width: 100%;
     margin-top: 16px;
-  }
-}
-
-/* Tablet view adjustments */
-@media (max-width: 1024px) and (min-width: 769px) {
-
-  .booking-form .button.primary,
-  .booking-form button[type="submit"] {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-    width: auto;
-    min-width: 120px;
-    margin: 20px auto 0;
-  }
-}
-
-/* Specific 768x1024 tablet styling - same as mobile */
-@media (max-width: 768px) and (min-width: 768px) {
-
-  .booking-form .button.primary,
-  .booking-form button[type="submit"] {
-    padding: 2px 4px;
-    font-size: 0.7rem;
-    width: auto;
-    min-width: 80px;
-    margin: 20px auto 0;
   }
 }
 
